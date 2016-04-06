@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+
+using Microsoft.Win32;
 
 namespace cautious_fortnight
 {
@@ -23,18 +14,43 @@ namespace cautious_fortnight
     /// </summary>
     public partial class MainWindow : Window
     {
+        OCR ocrModel;
+        Image<Bgr, Byte> image;
+
         public MainWindow()
         {
             InitializeComponent();
+            this.ocrModel = new OCR();
         }
 
-        private void image1_Initialized(object sender, EventArgs e)
+        private void btnOpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+                ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(new Image<Bgr, Byte>(openFileDialog.FileName));
+        }
+
+        private void ImagePanel_Initialized(object sender, EventArgs e)
         {
             Mat image = new Mat(100, 400, DepthType.Cv8U, 3);
             image.SetTo(new Bgr(255, 255, 255).MCvScalar);
             CvInvoke.PutText(image, "Hello, world", new System.Drawing.Point(10, 50), Emgu.CV.CvEnum.FontFace.HersheyPlain, 3.0, new Bgr(255.0, 0.0, 0.0).MCvScalar);
 
-            image1.Source = BitmapSourceConvert.ToBitmapSource(image);
+            ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(image);
+        }
+
+        private void ImagePanel_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                image = new Image<Bgr, Byte>(files[0]);
+
+                ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(new Image<Bgr, Byte>(files[0]));
+
+                TextBlock.Text = ocrModel.DetectText(image);
+            }
         }
     }
 }
