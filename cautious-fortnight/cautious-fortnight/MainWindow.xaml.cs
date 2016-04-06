@@ -43,7 +43,7 @@ namespace cautious_fortnight
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);s
 
                 image = new Image<Bgr, Byte>(files[0]);
 
