@@ -16,7 +16,7 @@ namespace cautious_fortnight
     {
         OCR ocrModel;
         Image<Bgr, Byte> image;
-        Window resultWindow;
+        //Window resultWindow;
         Document doc;
 
         public MainWindow()
@@ -59,6 +59,11 @@ namespace cautious_fortnight
 
                 //resultWindow.textBlock.Text = ocrModel.DetectText(image);
             }
+        }
+
+        private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Clipboard.SetText(TextBlock.Text); 
         }
     }
 }
