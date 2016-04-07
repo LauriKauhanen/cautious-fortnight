@@ -16,11 +16,17 @@ namespace cautious_fortnight
     {
         OCR ocrModel;
         Image<Bgr, Byte> image;
+        Window resultWindow;
+        Document doc;
 
         public MainWindow()
         {
             InitializeComponent();
+            this.doc = new Document();
             this.ocrModel = new OCR();
+
+            //Window resultWindow = new ResultWindow();
+            //resultWindow.Owner = this;
         }
 
         private void btnOpenFile_Click(object sender, RoutedEventArgs e)
@@ -44,12 +50,14 @@ namespace cautious_fortnight
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
+                //TODO: Check for image files
                 image = new Image<Bgr, Byte>(files[0]);
 
                 ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(new Image<Bgr, Byte>(files[0]));
 
                 TextBlock.Text = ocrModel.DetectText(image);
+
+                //resultWindow.textBlock.Text = ocrModel.DetectText(image);
             }
         }
     }
