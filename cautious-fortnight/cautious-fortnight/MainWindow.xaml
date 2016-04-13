@@ -5,13 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cautious_fortnight"
         mc:Ignorable="d"
-        Title="" Height="350" Width="793.216">
-    <Grid Margin="0,0,187,0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0*"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <DockPanel HorizontalAlignment="Left"   Height="auto" LastChildFill="True" VerticalAlignment="Top" Width="auto" Grid.ColumnSpan="2">
+        Title="" Height="350" Width="800">
+    <Grid>
+        <DockPanel HorizontalAlignment="Stretch"   Height="auto" LastChildFill="True" VerticalAlignment="Stretch" Width="auto" Grid.ColumnSpan="2">
             <Image x:Name="ImagePanel" Stretch="Fill" Initialized="ImagePanel_Initialized" Drop="ImagePanel_Drop" AllowDrop="true" DockPanel.Dock="Top" Height="auto"/>
         </DockPanel>
         <TextBlock x:Name="TextBlock" Grid.ColumnSpan="2" Margin="601,0,-182,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="320" HorizontalAlignment="Left" Width="auto"/>

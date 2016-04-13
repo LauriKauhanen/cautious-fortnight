@@ -27,13 +27,13 @@ namespace cautious_fortnight
             catch (Exception e)
             {
                 _ocr = null;
-                //TODO: send e to the VIEW
+                throw e;
             }
         }
 
         public String DetectText(Image<Bgr, Byte> image)
         {
-            Bgr drawColor = new Bgr(Color.Blue);
+            Bgr drawColor = new Bgr(Color.DarkRed);
             try
             {
                 using (Image<Gray, byte> gray = image.Convert<Gray, Byte>())
@@ -52,7 +52,7 @@ namespace cautious_fortnight
             catch (Exception e)
             {
                 return null;
-                //TODO: send e to the VIEW
+                throw e;
             }
         }
 

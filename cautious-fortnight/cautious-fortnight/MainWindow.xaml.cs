@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
+using System.ComponentModel;
 
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-
 using Microsoft.Win32;
 
 namespace cautious_fortnight
@@ -14,29 +14,23 @@ namespace cautious_fortnight
     /// </summary>
     public partial class MainWindow : Window
     {
-        OCR ocrModel;
-        Image<Bgr, Byte> image;
+        private OCR ocrModel;
+        public DocumentModel doc { get; }
+        private readonly BackgroundWorker worker = new BackgroundWorker();
 
         public MainWindow()
         {
             InitializeComponent();
             this.ocrModel = new OCR();
+            this.doc = new DocumentModel();
+            worker.DoWork += worker_DoWork;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
         }
 
-        private void btnOpenFile_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(new Image<Bgr, Byte>(openFileDialog.FileName));
-        }
 
         private void ImagePanel_Initialized(object sender, EventArgs e)
         {
-            Mat image = new Mat(100, 400, DepthType.Cv8U, 3);
-            image.SetTo(new Bgr(255, 255, 255).MCvScalar);
-            CvInvoke.PutText(image, "Hello, world", new System.Drawing.Point(10, 50), Emgu.CV.CvEnum.FontFace.HersheyPlain, 3.0, new Bgr(255.0, 0.0, 0.0).MCvScalar);
-
-            ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(image);
+            ImagePanel_RenderText("Drag and Drop image file here");
         }
 
         private void ImagePanel_Drop(object sender, DragEventArgs e)
@@ -45,12 +39,39 @@ namespace cautious_fortnight
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-                image = new Image<Bgr, Byte>(files[0]);
+                doc.Document = files[0];
 
-                ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(new Image<Bgr, Byte>(files[0]));
+                worker.RunWorkerAsync();
 
-                TextBlock.Text = ocrModel.DetectText(image);
+                ImagePanel_RenderText("OCR in progress...");
             }
+        }
+
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            doc.Result = ocrModel.DetectText(doc.Image);
+        }
+
+        private void worker_RunWorkerCompleted(object sender,
+                                               RunWorkerCompletedEventArgs e)
+        {
+            ResultWindow result = new ResultWindow();
+            result.Owner = this;
+            result.Show();
+            result.ResultTextBox.Text = doc.Result;
+
+            ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(doc.Image);
+            this.Width = doc.Image.Width;
+            this.Height = doc.Image.Height;
+        }
+
+        private void ImagePanel_RenderText(string text)
+        {
+            Mat image = new Mat(600, 1200, DepthType.Cv8U, 3);
+            image.SetTo(new Bgr(255, 255, 255).MCvScalar);
+            CvInvoke.PutText(image, text, new System.Drawing.Point(100, 250), Emgu.CV.CvEnum.FontFace.HersheyTriplex, 2.0, new Bgr(0.0, 0.0, 0.0).MCvScalar);
+
+            ImagePanel.Source = BitmapSourceConvert.ToBitmapSource(image);
         }
     }
 }
